@@ -1,0 +1,39 @@
+{
+  "name": "static-builder",
+  "version": "1.0.0",
+  "description": "build static files use gulp (js/css/fonts/imgs/html)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/immissile/static-builder.git"
+  },
+  "keywords": [
+    "gulp",
+    "builder",
+    "static"
+  ],
+  "author": "Missile",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/immissile/static-builder/issues"
+  },
+  "homepage": "https://github.com/immissile/static-builder#readme",
+  "dependencies": {
+    "del": "^2.2.2",
+    "gulp-concat": "^2.6.0",
+    "gulp-cssshrink": "^0.1.6",
+    "gulp-minify-html": "^1.0.6",
+    "gulp-rev": "^7.1.2",
+    "gulp-rev-collector": "^1.0.5",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "lodash-node": "^3.10.2",
+    "merge": "^1.2.0",
+    "qn": "^1.3.0",
+    "run-sequence": "^1.2.2",
+    "through2": "^2.0.1"
+  }
+}
