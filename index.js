@@ -75,9 +75,7 @@ module.exports = function (gulp, options) {
                 prefix: 'js'
             }))
             .pipe(gulp.dest(toDist(op.jsSrc)))
-            .pipe(rev.manifest({
-                base: './',
-            }))
+            .pipe(rev.manifest())
             .pipe(gulp.dest(toDist('rev/js/')));
     });
     gulp.task('build-img', function () {
@@ -139,12 +137,7 @@ module.exports = function (gulp, options) {
     gulp.task('build-html', function () {
         return gulp.src([src.dist + 'rev/**/*.json', src.html + '**/*.html'])
             .pipe(revCollector({
-                replaceReved: true,
-                /*
-                dirReplacements: {
-                    '../img/': '/img/'
-                }
-                */
+                replaceReved: true
             }))
             .pipe(minifyHTML({
                 empty: true,
