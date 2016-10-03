@@ -1,6 +1,7 @@
 'use strict';
 const uglify = require('gulp-uglify');
 const concat = require('gulp-concat');
+const less = require('gulp-less');
 const shrink = require('gulp-cssshrink');
 const del = require('del');
 const rev = require('gulp-rev');
@@ -8,6 +9,9 @@ const revCollector = require('gulp-rev-collector');
 const minifyHTML   = require('gulp-minify-html');
 const _ = require('lodash-node');
 const qn = require('./qiniu');
+const sourcemaps = require('gulp-sourcemaps');
+const browserSync = require('browser-sync').create();
+const reload = browserSync.reload;
 
 module.exports = function (gulp, options) {
     var op = _.assign({
@@ -15,6 +19,7 @@ module.exports = function (gulp, options) {
         distSrc: 'dist/',
         jsSrc: 'js/',
         cssSrc: 'css/',
+        lessSrc: 'less/',
         imgSrc: 'imgs/',
         fontSrc: 'fonts/',
         htmlSrc: 'html/',
@@ -51,6 +56,7 @@ module.exports = function (gulp, options) {
         dist: srcPrefix(op.distSrc),
         js: srcPrefix(op.jsSrc),
         css: srcPrefix(op.cssSrc),
+        less: srcPrefix(op.lessSrc),
         img: srcPrefix(op.imgSrc),
         font: srcPrefix(op.fontSrc),
         html: srcPrefix(op.htmlSrc),
@@ -69,7 +75,9 @@ module.exports = function (gulp, options) {
                 prefix: 'js'
             }))
             .pipe(gulp.dest(toDist(op.jsSrc)))
-            .pipe(rev.manifest())
+            .pipe(rev.manifest({
+                base: './',
+            }))
             .pipe(gulp.dest(toDist('rev/js/')));
     });
     gulp.task('build-img', function () {
@@ -99,6 +107,7 @@ module.exports = function (gulp, options) {
 
     gulp.task('build-css', function () {
         return gulp.src([src.css + '**/*.css'])
+            .pipe(less())
             .pipe(rev())
             .pipe(gulp.dest(toDist('css-tmp/')))
             .pipe(rev.manifest())
@@ -118,10 +127,24 @@ module.exports = function (gulp, options) {
             .pipe(shrink())
             .pipe(gulp.dest(toDist(op.cssSrc)));
     });
+    // for reload css
+    gulp.task('less', function() {
+        return gulp.src([src.less + '**/*.less'])
+            .pipe(sourcemaps.init())
+            .pipe(less())
+            .pipe(sourcemaps.write())
+            .pipe(gulp.dest(src.css))
+            .pipe(reload({stream: true}));
+    });
     gulp.task('build-html', function () {
         return gulp.src([src.dist + 'rev/**/*.json', src.html + '**/*.html'])
             .pipe(revCollector({
-                replaceReved: true
+                replaceReved: true,
+                /*
+                dirReplacements: {
+                    '../img/': '/img/'
+                }
+                */
             }))
             .pipe(minifyHTML({
                 empty: true,
@@ -131,6 +154,18 @@ module.exports = function (gulp, options) {
     });
     gulp.task('clean', function () {
         return del([src.dist]);
+    });
+
+    gulp.task('serve', ['less'], function () {
+        browserSync.init({
+            server: {
+                baseDir: op.appRoot
+            }
+        });
+
+        gulp.watch(src.less + '**/*.less', ['less']);
+        gulp.watch(src.js + '**/*.js').on('change', reload);
+        gulp.watch(src.html + '**/*.html').on('change', reload);
     });
 
     const runSequence = require('run-sequence').use(gulp);
