@@ -1,6 +1,6 @@
 {
   "name": "static-builder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "build static files use gulp (js/css/fonts/imgs/html)",
   "main": "index.js",
   "scripts": {
